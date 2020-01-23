@@ -20,9 +20,15 @@ namespace DevTestProject
             );
 
             routes.MapRoute(
-                name: "Users",
+                name: "Employees",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "EmployeesController", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Teams",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "TeamsController", action = "Index", id = UrlParameter.Optional }
             );
         }
     }

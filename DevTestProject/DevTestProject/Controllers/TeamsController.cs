@@ -6,9 +6,9 @@ using System.Web.Mvc;
 
 namespace DevTestProject.Controllers
 {
-    public class UsersController : Controller
+    public class TeamsController : Controller
     {
-        // GET: Users
+        // GET: Teams
         public ActionResult Index()
         {
             return View();

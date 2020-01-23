@@ -10,6 +10,6 @@ namespace DevTestProject.Models
         public int Id { get; set; }
         public int Project_Id { get; set; }
         public int Team_Id { get; set; }
-        public string DateAssigned { get; set; }
+        public DateTime DateAssigned { get; set; }
     }
 }

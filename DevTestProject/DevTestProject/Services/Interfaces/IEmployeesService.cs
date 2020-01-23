@@ -9,10 +9,11 @@ namespace DevTestProject.Services.Interfaces
 {
     interface IEmployeesService
     {
-        void Create(EmployeesModel employee);
-        List<EmployeesModel> GetAllEmployees();
+        bool Create(EmployeesModel employee);
         EmployeesModel GetEmployee(int employee_id);
-        void Update(EmployeesModel employee);
-        void Delete(EmployeesModel employee);
+        List<EmployeesModel> GetAllEmployees();
+        List<EmployeesModel> GetAllEmployeesByPage(int page, int item_on_page);
+        bool Update(EmployeesModel employee);
+        bool Delete(EmployeesModel employee);
     }
 }

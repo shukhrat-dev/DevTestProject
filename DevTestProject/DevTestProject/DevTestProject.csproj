@@ -121,12 +121,13 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Controllers\TeamsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\EmployyesModel.cs" />
+    <Compile Include="Models\EmployeesModel.cs" />
     <Compile Include="Models\ProjectCooperaionModel.cs" />
     <Compile Include="Models\ProjectsModel.cs" />
     <Compile Include="Models\TeamsModel.cs" />
@@ -134,11 +135,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Classes\EmployeesService.cs" />
     <Compile Include="Services\Classes\ProjectCooperationService.cs" />
+    <Compile Include="Services\Classes\TeamsService.cs" />
     <Compile Include="Services\Interfaces\IEmployeesService.cs" />
     <Compile Include="Services\Interfaces\IProjectCooperationService.cs" />
     <Compile Include="Services\Interfaces\IProjectsService.cs" />
     <Compile Include="Services\Interfaces\ITeamsService.cs" />
     <Compile Include="Services\Interfaces\IWorkItemsService.cs" />
+    <Compile Include="ViewModel\EmployeesVm.cs" />
+    <Compile Include="ViewModel\TeamsVm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -176,7 +180,10 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Employees\Index.cshtml" />
+    <Content Include="Views\Employees\Edit.cshtml" />
+    <Content Include="Views\Employees\Create.cshtml" />
+    <Content Include="Views\Teams\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

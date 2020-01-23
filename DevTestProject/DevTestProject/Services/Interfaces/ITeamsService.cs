@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevTestProject.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,10 @@ namespace DevTestProject.Services.Interfaces
 {
     interface ITeamsService
     {
+        bool Create(TeamsModel team);
+        TeamsModel GetTeam(int team_id);
+        List<TeamsModel> GetTeams();
+        bool Update(TeamsModel team);
+        bool Delete(TeamsModel team);
     }
 }
