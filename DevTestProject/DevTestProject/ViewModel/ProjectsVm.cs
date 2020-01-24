@@ -6,8 +6,8 @@ using System.Web;
 
 namespace DevTestProject.ViewModel
 {
-    public class TeamsVm : TeamsModel
+    public class ProjectsVm : ProjectsModel
     {
-        public List<TeamsModel> TeamList { get; set; }
+        public List<ProjectsModel> ProjectList;
     }
 }

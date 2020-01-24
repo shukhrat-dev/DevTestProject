@@ -30,6 +30,12 @@ namespace DevTestProject
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "TeamsController", action = "Index", id = UrlParameter.Optional }
             );
+
+            routes.MapRoute(
+            name: "Projects",
+            url: "{controller}/{action}/{id}",
+            defaults: new { controller = "ProjectsController", action = "Index", id = UrlParameter.Optional }
+            );
         }
     }
 }

@@ -13,6 +13,6 @@ namespace DevTestProject.Services.Interfaces
         TeamsModel GetTeam(int team_id);
         List<TeamsModel> GetTeams();
         bool Update(TeamsModel team);
-        bool Delete(TeamsModel team);
+        bool Delete(int team_id);
     }
 }

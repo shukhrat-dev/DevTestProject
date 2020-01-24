@@ -10,7 +10,7 @@ namespace DevTestProject.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public int ProjectManager_Id { get; set; }
-        public string DateStart { get; set; }
-        public string DateDue { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateDue { get; set; }
     }
 }

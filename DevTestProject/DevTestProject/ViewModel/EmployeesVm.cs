@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace DevTestProject.ViewModel
 {
-    public class EmployeesVm
+    public class EmployeesVm : EmployeesModel
     {
         public int Id { get; set; }
         public int Page { get; set; }
@@ -16,11 +16,5 @@ namespace DevTestProject.ViewModel
         public List<EmployeesModel> Employees { get; set; }
         public EmployeesModel Employee { get; set; }       
         public List<SelectListItem> TeamList { get; set; }
-
-        public string FirstName { get; set; }
-        public string MiddleName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public int Team_Id { get; set; }
     }
 }

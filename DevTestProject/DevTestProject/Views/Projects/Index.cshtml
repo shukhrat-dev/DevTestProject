@@ -1,27 +1,34 @@
-﻿@model DevTestProject.ViewModel.TeamsVm
+﻿@model DevTestProject.ViewModel.ProjectsVm
 
 
     <div class="row">
+
         <div class="col-md-8">
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
-                        <th scope="col" colspan="2">Team settings</th>
+                        <th scope="col">Project manager</th>
+                        <th scope="col">Date start</th>
+                        <th scope="col">Date end</th>
+                        <th scope="col" colspan="2">Project settings</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var team in Model.TeamList)
+                    @foreach (var project in Model.ProjectList)
                     {
                         <tr>
-                            <th scope="row">@team.Id</th>
-                            <td>@team.Name</td>
+                            <th scope="row">@project.Id</th>
+                            <td>@project.Name</td>
+                            <td>@project.ProjectManager_Id</td>
+                            <td>@project.DateStart</td>
+                            <td>@project.DateDue</td>
                             <td>
-                                <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { team_id = team.Id})';" />
+                                <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { project_id = project.Id})';" />
                             </td>
                             <td>
-                                <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { team_id = team.Id})';" />
+                                <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { project_id = project.Id})';" />
                             </td>
 
                         </tr>
@@ -39,6 +46,6 @@
         </div>
 
         <div class="col-md-2">
-            <input class="btn btn-success" type="button" value="Create team" onclick="location.href='@Url.Action("Create", "Teams")';" />
+            <input class="btn btn-success" type="button" value="Create employee" onclick="location.href='@Url.Action("Create", "Projects")';" />
         </div>
     </div>

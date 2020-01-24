@@ -12,8 +12,8 @@ namespace DevTestProject.Controllers
 {
     public class EmployeesController : Controller
     {
-        private readonly IEmployeesService _employeesService = new EmployeesService(); 
-        private readonly ITeamsService _teamService = new TeamsService();
+        private readonly EmployeesService _employeesService = new EmployeesService(); 
+        private readonly TeamsService _teamService = new TeamsService();
         // GET: Employees
         public ActionResult Index(int page = 1, int itemOnPage = 1, string message = null)
         {
@@ -113,7 +113,15 @@ namespace DevTestProject.Controllers
                 Team_Id = model.Team_Id
             };
 
-            _employeesService.Update(employee);
+            try
+            {
+                _employeesService.Update(employee);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Edit", model);
+            }
+
             return RedirectToAction("Index");
         }
         public ActionResult Delete(int employee_id)

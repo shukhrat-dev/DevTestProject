@@ -1,6 +1,5 @@
 ﻿using DevTestProject.Models;
 using DevTestProject.Services.Classes;
-using DevTestProject.Services.Interfaces;
 using DevTestProject.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -10,48 +9,51 @@ using System.Web.Mvc;
 
 namespace DevTestProject.Controllers
 {
-    public class TeamsController : Controller
+    public class ProjectsController : Controller
     {
-        private readonly TeamsService _teamService = new TeamsService();
+        private readonly ProjectsService _projectService = new ProjectsService();
         // GET: Teams
         public ActionResult Index()
         {
-            List<TeamsModel> teams = new List<TeamsModel>();
+            List<ProjectsModel> projects = new List<ProjectsModel>();
             try
             {
-                teams = _teamService.GetTeams();
+                projects = _projectService.GetAllProjects();
             }
             catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }
-            TeamsVm model = new TeamsVm()
+            ProjectsVm model = new ProjectsVm()
             {
-                TeamList = teams
+                ProjectList = projects
             };
             return View("Index", model);
         }
 
         public ActionResult Create()
         {
-            TeamsVm model = new TeamsVm();
+            ProjectsVm model = new ProjectsVm();
             return View("Create", model);
         }
 
         [HttpPost]
-        public ActionResult Create(TeamsVm model)
+        public ActionResult Create(ProjectsVm model)
         {
             if (model is null)
             {
                 return RedirectToAction("Create");
             }
-            TeamsModel team = new TeamsModel()
+            ProjectsModel project = new ProjectsModel()
             {
-                Name = model.Name
+                Name = model.Name,
+                ProjectManager_Id = model.ProjectManager_Id,
+                DateStart = model.DateStart,
+                DateDue = model.DateDue
             };
             try
             {
-                _teamService.Create(team);
+                _projectService.Create(project);
             }
             catch (Exception)
             {
@@ -61,15 +63,18 @@ namespace DevTestProject.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Edit(int team_id)
+        public ActionResult Edit(int project_id)
         {
-            TeamsModel team = new TeamsModel();
-            TeamsVm model = new TeamsVm();
+            ProjectsModel project = new ProjectsModel();
+            ProjectsVm model = new ProjectsVm();
             try
             {
-                team = _teamService.GetTeam(team_id);
-                model.Id = team.Id;
-                model.Name = team.Name;
+                project = _projectService.GetProject(project_id);
+                model.Id = project.Id;
+                model.Name = project.Name;
+                model.ProjectManager_Id = project.ProjectManager_Id;
+                model.DateStart = project.DateStart;
+                model.DateDue = project.DateDue;
             }
             catch (Exception)
             {
@@ -79,17 +84,20 @@ namespace DevTestProject.Controllers
             return View("Edit", model);
         }
 
-        public ActionResult SaveEdititngTeam(TeamsVm model)
+        public ActionResult SaveEdititngProject(ProjectsVm model)
         {
-            TeamsModel team = new TeamsModel()
+            ProjectsModel project = new ProjectsModel()
             {
                 Id = model.Id,
-                Name = model.Name
+                Name = model.Name,
+                ProjectManager_Id = model.ProjectManager_Id,
+                DateStart = model.DateStart,
+                DateDue = model.DateDue
             };
 
             try
             {
-                _teamService.Update(team);
+                _projectService.Update(project);
             }
             catch (Exception)
             {
@@ -97,12 +105,12 @@ namespace DevTestProject.Controllers
             }
             return RedirectToAction("Index");
         }
-            
-        public ActionResult Delete(int team_id)
-        { 
+
+        public ActionResult Delete(int project_id)
+        {
             try
             {
-                _teamService.Delete(team_id);
+                _projectService.Delete(project_id);
             }
             catch (Exception)
             {

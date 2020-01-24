@@ -24,7 +24,7 @@ namespace DevTestProject.Services.Classes
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
                     string queryString = $"INSERT INTO {TableName} (Name) " +
-                        $"VALUES ('{team.Name}'";
+                        $"VALUES ('{team.Name}')";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -38,17 +38,13 @@ namespace DevTestProject.Services.Classes
             }
         }
 
-        public bool Delete(TeamsModel team)
+        public bool Delete(int team_id)
         {
-            if (team == null)
-            {
-                return false;
-            }
             try
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"DELETE FROM {TableName} WHERE {TableName}.Id = {team.Id}";
+                    string queryString = $"DELETE FROM {TableName} WHERE {TableName}.Id = {team_id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -56,7 +52,7 @@ namespace DevTestProject.Services.Classes
                     return number > 0 ? true : false;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }
@@ -140,7 +136,7 @@ namespace DevTestProject.Services.Classes
 
         public bool Update(TeamsModel team)
         {
-            if (team == null)
+            if (team is null)
             {
                 return false;
             }
@@ -149,7 +145,8 @@ namespace DevTestProject.Services.Classes
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
                     string queryString = $"UPDATE {TableName} " +
-                        $"SET Name = '{team.Name}'";
+                        $"SET Name = '{team.Name}' " +
+                        $" WHERE {TableName}.Id = {team.Id}"; ;
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
