@@ -7,10 +7,11 @@ using System.Web.Mvc;
 
 namespace DevTestProject.ViewModel
 {
-    public class ProjectsVm : ProjectsModel
+    public class WorkItemsVm : WorkItemsModel
     {
-        public List<ProjectsModel> ProjectList;
-        public Dictionary<string, string> TeamsOnProject { get; set; }
+        public List<WorkItemsModel> WorkItems { get; set; }
+        public List<EmployeesModel> EmployeesList { get; set; }
+        public List<SelectListItem> ProjectsList { get; set; }
         public List<SelectListItem> EmployeeList { get; set; }
     }
 }

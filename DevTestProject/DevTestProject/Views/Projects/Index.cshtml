@@ -1,41 +1,57 @@
 ﻿@model DevTestProject.ViewModel.ProjectsVm
-
-
     <div class="row">
+        <div class="col-md-2">
+            <input class="btn btn-success" type="button" value="Create employee" onclick="location.href='@Url.Action("Create", "Projects")';" />
+        </div>
+    </div>
 
-        <div class="col-md-8">
-            <table class="table">
-                <thead class="thead-dark">
+<div class="row">
+    <div class="col-md-8">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Project manager</th>
+                    <th scope="col">Date start</th>
+                    <th scope="col">Date end</th>
+                    <th scope="col">Team which worked on project</th>
+                    <th scope="col" colspan="2">Project settings</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model.ProjectList)
+                {
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Project manager</th>
-                        <th scope="col">Date start</th>
-                        <th scope="col">Date end</th>
-                        <th scope="col" colspan="2">Project settings</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var project in Model.ProjectList)
-                    {
-                        <tr>
-                            <th scope="row">@project.Id</th>
-                            <td>@project.Name</td>
-                            <td>@project.ProjectManager_Id</td>
-                            <td>@project.DateStart</td>
-                            <td>@project.DateDue</td>
-                            <td>
-                                <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { project_id = project.Id})';" />
-                            </td>
-                            <td>
-                                <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { project_id = project.Id})';" />
-                            </td>
+                        <th scope="row">@project.Id</th>
+                        <td>@project.Name</td>
+                        <td>@project.ProjectManager_Id</td>
+                        <td>@project.DateStart</td>
+                        <td>@project.DateDue</td>
+                        <td>
+                            @foreach (var team in Model.TeamsOnProject)
+                            {
+                                <ol>
+                                    @if (team.Value.Contains(project.Name))
+                                    {
+                                        @team.Key
+                                    }
+                                </ol>
 
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            @*<nav aria-label="Employee pagination">
+                            }
+                        </td>
+                        <td>
+                            <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { project_id = project.Id})';" />
+                        </td>
+                        <td>
+                            <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { project_id = project.Id})';" />
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @*<nav aria-label="Employee pagination">
 
                 <ul class="pagination">
                     <li class="page-item">@Html.ActionLink("Previous", "Index", new { page = Model.Page - 1, itemOnPage = Model.ItemOnPage })</li>
@@ -43,9 +59,7 @@
                     <li class="page-item"><a class="page-link" href="#">Next</a></li>
                 </ul>
             </nav>*@
-        </div>
-
-        <div class="col-md-2">
-            <input class="btn btn-success" type="button" value="Create employee" onclick="location.href='@Url.Action("Create", "Projects")';" />
-        </div>
     </div>
+
+
+</div>

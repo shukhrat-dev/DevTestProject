@@ -31,13 +31,14 @@ namespace DevTestProject.Controllers
             int employeesAmount = employees.Count();
             int employeesForOnePage = employeesAmount / itemOnPage;
             employees = employees.Take(employeesForOnePage).ToList();
-
+            List<TeamsModel> teamNames = _teamService.GetTeams();
             EmployeesVm model = new EmployeesVm()
             {
                 Employees = employees,
                 EmployeesForPage = employeesForOnePage,
                 ItemOnPage = itemOnPage,
-                Page = page
+                Page = page,
+                TeamNames = teamNames
                 
             };
             return View("Index", model);

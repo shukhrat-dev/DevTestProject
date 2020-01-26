@@ -13,6 +13,8 @@ namespace DevTestProject.Services.Classes
     {
         private string ConnectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
         private string TableName = "[dbo].[teams]";
+        private string ProjectsCooperation = "[dbo].[project_cooperation]";
+        private string Projects = "[dbo].[projects]";
         public bool Create(TeamsModel team)
         {
             if (team == null)
@@ -133,6 +135,53 @@ namespace DevTestProject.Services.Classes
             }
             return teams;
         }
+
+
+
+
+        public Dictionary<string, int> GetTeamsProjectsCount()
+        {
+            Dictionary<string, int> projectsAmount = new Dictionary<string, int>(); 
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    string queryString =  $"SELECT {TableName}.Name as teams_name, count(proj.Id) as project_amount "
+                                        + $"FROM {TableName} "
+                                        + $"JOIN {ProjectsCooperation} project_coop ON {TableName}.Id = project_coop.Team_Id "
+                                        + $"JOIN {Projects} proj ON project_coop.Project_Id = proj.Id "
+                                        + $"GROUP BY {TableName}.Name";
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Prepare();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        try
+                        {      
+                            string teamName = reader["teams_name"].ToString();
+                            int projectsCount = int.Parse(reader["project_amount"].ToString());
+                            projectsAmount.Add(teamName, projectsCount);
+                        }
+                        catch (Exception e)
+                        {
+                            return new Dictionary<string, int>();
+                        }
+
+                    }
+
+                }
+
+            }
+            catch (Exception)
+            {
+
+                return new Dictionary<string, int>();
+            }
+
+            return projectsAmount;
+        }
+
 
         public bool Update(TeamsModel team)
         {

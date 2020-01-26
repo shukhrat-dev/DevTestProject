@@ -32,9 +32,21 @@ namespace DevTestProject
             );
 
             routes.MapRoute(
-            name: "Projects",
-            url: "{controller}/{action}/{id}",
-            defaults: new { controller = "ProjectsController", action = "Index", id = UrlParameter.Optional }
+                name: "Projects",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "ProjectsController", action = "Index", id = UrlParameter.Optional }
+            );
+            
+            routes.MapRoute(
+                name: "WorkItems",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "WorkItemsController", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "ProjectCooperations",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "ProjectCooperationsController", action = "Index", id = UrlParameter.Optional }
             );
         }
     }

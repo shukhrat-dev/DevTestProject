@@ -16,5 +16,6 @@ namespace DevTestProject.ViewModel
         public List<EmployeesModel> Employees { get; set; }
         public EmployeesModel Employee { get; set; }       
         public List<SelectListItem> TeamList { get; set; }
+        public List<TeamsModel> TeamNames { get; set; }
     }
 }

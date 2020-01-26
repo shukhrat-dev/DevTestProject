@@ -12,13 +12,16 @@ namespace DevTestProject.Controllers
     public class ProjectsController : Controller
     {
         private readonly ProjectsService _projectService = new ProjectsService();
+        private readonly EmployeesService _employeeService = new EmployeesService();
         // GET: Teams
         public ActionResult Index()
         {
             List<ProjectsModel> projects = new List<ProjectsModel>();
+            Dictionary<string, string> teamsOnProject = new Dictionary<string, string>();
             try
             {
                 projects = _projectService.GetAllProjects();
+                teamsOnProject = _projectService.GetTeamWorkedOnProject();
             }
             catch (Exception)
             {
@@ -26,21 +29,38 @@ namespace DevTestProject.Controllers
             }
             ProjectsVm model = new ProjectsVm()
             {
-                ProjectList = projects
+                ProjectList = projects,
+                TeamsOnProject = teamsOnProject
             };
             return View("Index", model);
         }
 
         public ActionResult Create()
         {
-            ProjectsVm model = new ProjectsVm();
+            //List<EmployeesModel> employees = new List<EmployeesModel>();
+
+            //employees = _employeeService.GetAllEmployees();
+            //foreach (var employee in employees)
+            //{
+            //    employeeList.Add(
+            //        new SelectListItem
+            //        {
+            //            Text = employee.Id.ToString(),
+            //            Value = employee.Id.ToString()
+            //        });
+            //}
+            List<SelectListItem> employeeList = GetEmployeeList();
+            ProjectsVm model = new ProjectsVm()
+            {
+                EmployeeList = employeeList
+            };
             return View("Create", model);
         }
 
         [HttpPost]
         public ActionResult Create(ProjectsVm model)
         {
-            if (model is null)
+            if (model is null || model.DateStart == DateTime.MinValue || model.DateDue == DateTime.MinValue || DateTime.Compare(model.DateStart, model.DateDue) > 0)
             {
                 return RedirectToAction("Create");
             }
@@ -48,8 +68,8 @@ namespace DevTestProject.Controllers
             {
                 Name = model.Name,
                 ProjectManager_Id = model.ProjectManager_Id,
-                DateStart = model.DateStart,
-                DateDue = model.DateDue
+                DateStart = model.DateStart.Date,
+                DateDue = model.DateDue.Date
             };
             try
             {
@@ -66,6 +86,7 @@ namespace DevTestProject.Controllers
         public ActionResult Edit(int project_id)
         {
             ProjectsModel project = new ProjectsModel();
+            List<SelectListItem> employeeList = GetEmployeeList();
             ProjectsVm model = new ProjectsVm();
             try
             {
@@ -75,6 +96,7 @@ namespace DevTestProject.Controllers
                 model.ProjectManager_Id = project.ProjectManager_Id;
                 model.DateStart = project.DateStart;
                 model.DateDue = project.DateDue;
+                model.EmployeeList = employeeList;
             }
             catch (Exception)
             {
@@ -117,6 +139,24 @@ namespace DevTestProject.Controllers
                 return RedirectToAction("Index");
             }
             return RedirectToAction("Index");
+        }
+
+        private List<SelectListItem> GetEmployeeList()
+        {
+            List<EmployeesModel> employees = new List<EmployeesModel>();
+            List<SelectListItem> employeeList = new List<SelectListItem>();
+            employees = _employeeService.GetAllEmployees();
+            foreach (var employee in employees)
+            {
+                employeeList.Add(
+                    new SelectListItem
+                    {
+                        Text = employee.Id.ToString(),
+                        Value = employee.Id.ToString()
+                    });
+            }
+
+            return employeeList;
         }
     }
 }

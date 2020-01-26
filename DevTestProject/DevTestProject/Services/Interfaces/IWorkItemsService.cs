@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevTestProject.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,11 @@ namespace DevTestProject.Services.Interfaces
 {
     interface IWorkItemsService
     {
+        bool Create(WorkItemsModel team);
+        WorkItemsModel GetWorkItem(int workItem_id);
+        List<WorkItemsModel> GetAllWorkItems();
+        List<int> GetAllEmployeeFromProject(int project_id);
+        bool Update(WorkItemsModel workItem);
+        bool Delete(int team_id);
     }
 }

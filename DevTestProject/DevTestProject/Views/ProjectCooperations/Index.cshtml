@@ -1,0 +1,50 @@
+﻿@model DevTestProject.ViewModel.ProjectCooperationsVm
+    <div class="row">
+        <div class="col-md-2">
+            <input class="btn btn-success" type="button" value="Create employee" onclick="location.href='@Url.Action("Create", "ProjectCooperations")';" />
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-md-8">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Project_Id</th>
+                    <th scope="col">Team_Id</th>
+                    <th scope="col">DateAssigned</th>
+                    <th scope="col" colspan="2">Project cooperations settings</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var projectCooperation in Model.ProjectCooperations)
+                {
+                    <tr>
+                        <th scope="row">@projectCooperation.Id</th>
+                        <td>@projectCooperation.Project_Id</td>
+                        <td>@projectCooperation.Team_Id</td>
+                        <td>@projectCooperation.DateAssigned</td>
+                        <td>
+                            <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { projectCooperation_id = projectCooperation.Id})';" />
+                        </td>
+                        <td>
+                            <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { projectCooperation_id = projectCooperation.Id})';" />
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @*<nav aria-label="Employee pagination">
+
+                <ul class="pagination">
+                    <li class="page-item">@Html.ActionLink("Previous", "Index", new { page = Model.Page - 1, itemOnPage = Model.ItemOnPage })</li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>*@
+    </div>
+
+
+</div>

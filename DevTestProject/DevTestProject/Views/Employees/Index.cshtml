@@ -1,54 +1,63 @@
 ﻿@model DevTestProject.ViewModel.EmployeesVm
 
+<div class="row">
+    <div class="col-md-2">
+        <input class="btn btn-success" type="button" value="Create employee" onclick="location.href='@Url.Action("Create", "Employees")';" />
+    </div>
+</div>
 
-    <div class="row">
+<div class="row">
 
-        <div class="col-md-8">
-            <table class="table">
-                <thead class="thead-dark">
+    <div class="col-md-8">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First name</th>
+                    <th scope="col">Middle name</th>
+                    <th scope="col">Last name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Team number</th>
+                    <th scope="col">Team name</th>
+                    <th scope="col" colspan="2">User settings</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in Model.Employees)
+                {
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">First name</th>
-                        <th scope="col">Middle name</th>
-                        <th scope="col">Last name</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Team number</th>
-                        <th scope="col" colspan="2">User settings</th>
+                        <th scope="row">@employee.Id</th>
+                        <td>@employee.FirstName</td>
+                        <td>@employee.MiddleName</td>
+                        <td>@employee.LastName</td>
+                        <td>@employee.Email</td>
+                        <td>@employee.Team_Id</td>
+                        @foreach (var teamName in Model.TeamNames)
+                        {
+                            if (teamName.Id == employee.Team_Id)
+                            {
+                                <td>@teamName.Name</td>
+                            }
+                        }
+                        <td>
+                            <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { employee_id = employee.Id})';" />
+                        </td>
+                        <td>
+                            <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { employee_id = employee.Id})';" />
+                        </td>
 
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var employee in Model.Employees)
-                    {
-                        <tr>
-                            <th scope="row">@employee.Id</th>
-                            <td>@employee.FirstName</td>
-                            <td>@employee.MiddleName</td>
-                            <td>@employee.LastName</td>
-                            <td>@employee.Email</td>
-                            <td>@employee.Team_Id</td>
-                            <td>
-                                <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { employee_id = employee.Id})';" />
-                            </td>
-                            <td>
-                                <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { employee_id = employee.Id})';" />
-                            </td>
+                }
+            </tbody>
+        </table>
+        <nav aria-label="Employee pagination">
 
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <nav aria-label="Employee pagination">
-
-                <ul class="pagination">
-                    <li class="page-item">@Html.ActionLink("Previous", "Index", new { page = Model.Page - 1, itemOnPage = Model.ItemOnPage })</li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
-        </div>
-
-        <div class="col-md-2">
-            <input class="btn btn-success" type="button" value="Create employee" onclick="location.href='@Url.Action("Create", "Employees")';" />
-        </div>
+            <ul class="pagination">
+                <li class="page-item">@Html.ActionLink("Previous", "Index", new { page = Model.Page - 1, itemOnPage = Model.ItemOnPage })</li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </nav>
     </div>
+</div>

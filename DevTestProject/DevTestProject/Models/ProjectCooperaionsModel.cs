@@ -5,7 +5,7 @@ using System.Web;
 
 namespace DevTestProject.Models
 {
-    public class ProjectCooperaionModel
+    public class ProjectCooperaionsModel
     {
         public int Id { get; set; }
         public int Project_Id { get; set; }

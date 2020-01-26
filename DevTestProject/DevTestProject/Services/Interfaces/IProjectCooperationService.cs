@@ -9,11 +9,12 @@ namespace DevTestProject.Services.Interfaces
 {
     interface IProjectCooperationService
     {
-        void Create(ProjectCooperaionModel employee);
-        List<ProjectCooperaionModel> GetAllCooperations();
-        ProjectCooperaionModel GetProjectCooperation(int projectCooperation_id);
-        void Update(ProjectCooperaionModel projectCooperation);
-        void Delete(ProjectCooperaionModel projectCooperation);
-        
+        bool Create(ProjectCooperaionsModel projectCooperaion);
+        List<ProjectCooperaionsModel> GetAllCooperations();
+        ProjectCooperaionsModel GetProjectCooperation(int projectCooperation_id);
+        bool Update(ProjectCooperaionsModel projectCooperation);
+        bool Delete(int projectCooperaion_id);
+
+
     }
 }

@@ -1,5 +1,9 @@
 ﻿@model DevTestProject.ViewModel.TeamsVm
-
+    <div class="row">
+        <div class="col-md-2">
+            <input class="btn btn-success" type="button" value="Create team" onclick="location.href='@Url.Action("Create", "Teams")';" />
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-md-8">
@@ -8,23 +12,33 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Name</th>
+                        <th scope="col">Teams projects count</th>
                         <th scope="col" colspan="2">Team settings</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var team in Model.TeamList)
                     {
-                        <tr>
-                            <th scope="row">@team.Id</th>
-                            <td>@team.Name</td>
-                            <td>
-                                <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { team_id = team.Id})';" />
-                            </td>
-                            <td>
-                                <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { team_id = team.Id})';" />
-                            </td>
-
-                        </tr>
+                    <tr>
+                        <th scope="row">@team.Id</th>
+                        <td>@team.Name</td>
+                        <td>
+                            @foreach(var project in Model.TeamProjects)
+                            {
+                                if(project.Key.Contains(team.Name))
+                                {
+                                    @project.Value
+                                }                                
+                            }
+                        </td>
+                        <td>
+                            <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { team_id = team.Id})';" />
+                        </td>
+                        <td>
+                            <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { team_id = team.Id})';" />
+                        </td>
+                    </tr>
+                        
                     }
                 </tbody>
             </table>
@@ -38,7 +52,5 @@
             </nav>*@
         </div>
 
-        <div class="col-md-2">
-            <input class="btn btn-success" type="button" value="Create team" onclick="location.href='@Url.Action("Create", "Teams")';" />
-        </div>
+
     </div>

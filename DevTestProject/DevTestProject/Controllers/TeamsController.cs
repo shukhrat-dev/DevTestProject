@@ -17,9 +17,11 @@ namespace DevTestProject.Controllers
         public ActionResult Index()
         {
             List<TeamsModel> teams = new List<TeamsModel>();
+            Dictionary<string, int> teamProjects = new Dictionary<string, int>();
             try
             {
                 teams = _teamService.GetTeams();
+                teamProjects = _teamService.GetTeamsProjectsCount();
             }
             catch (Exception)
             {
@@ -27,7 +29,8 @@ namespace DevTestProject.Controllers
             }
             TeamsVm model = new TeamsVm()
             {
-                TeamList = teams
+                TeamList = teams,
+                TeamProjects = teamProjects
             };
             return View("Index", model);
         }

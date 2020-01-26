@@ -123,13 +123,15 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProjectCooperationsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Controllers\TeamsController.cs" />
+    <Compile Include="Controllers\WorkItemsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\EmployeesModel.cs" />
-    <Compile Include="Models\ProjectCooperaionModel.cs" />
+    <Compile Include="Models\ProjectCooperaionsModel.cs" />
     <Compile Include="Models\ProjectsModel.cs" />
     <Compile Include="Models\TeamsModel.cs" />
     <Compile Include="Models\WorkItemsModel.cs" />
@@ -138,14 +140,17 @@
     <Compile Include="Services\Classes\ProjectCooperationService.cs" />
     <Compile Include="Services\Classes\ProjectsService.cs" />
     <Compile Include="Services\Classes\TeamsService.cs" />
+    <Compile Include="Services\Classes\WorkItemsService.cs" />
     <Compile Include="Services\Interfaces\IEmployeesService.cs" />
     <Compile Include="Services\Interfaces\IProjectCooperationService.cs" />
     <Compile Include="Services\Interfaces\IProjectsService.cs" />
     <Compile Include="Services\Interfaces\ITeamsService.cs" />
     <Compile Include="Services\Interfaces\IWorkItemsService.cs" />
     <Compile Include="ViewModel\EmployeesVm.cs" />
+    <Compile Include="ViewModel\ProjectCooperationsVm.cs" />
     <Compile Include="ViewModel\ProjectsVm.cs" />
     <Compile Include="ViewModel\TeamsVm.cs" />
+    <Compile Include="ViewModel\WorkItemsVm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -159,6 +164,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\CreateWorkItemAjaxRequest.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -169,6 +175,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\EditWorkItemAjaxRequest.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -190,6 +197,12 @@
     <Content Include="Views\Teams\Edit.cshtml" />
     <Content Include="Views\Teams\Create.cshtml" />
     <Content Include="Views\Projects\Index.cshtml" />
+    <Content Include="Views\Projects\Create.cshtml" />
+    <Content Include="Views\Projects\Edit.cshtml" />
+    <Content Include="Views\WorkItems\Index.cshtml" />
+    <Content Include="Views\WorkItems\Create.cshtml" />
+    <Content Include="Views\WorkItems\Edit.cshtml" />
+    <Content Include="Views\ProjectCooperations\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

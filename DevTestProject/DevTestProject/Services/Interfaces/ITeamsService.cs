@@ -11,6 +11,7 @@ namespace DevTestProject.Services.Interfaces
     {
         bool Create(TeamsModel team);
         TeamsModel GetTeam(int team_id);
+        Dictionary<string, int> GetTeamsProjectsCount();
         List<TeamsModel> GetTeams();
         bool Update(TeamsModel team);
         bool Delete(int team_id);
