@@ -42,13 +42,43 @@ namespace DevTestProject.Controllers
         {
             List<SelectListItem> projectList = GetProjectList();
             List<SelectListItem> teamList = GetTeamList();
-            
-            
-            ProjectsVm model = new ProjectsVm()
+            ProjectCooperationsVm model = new ProjectCooperationsVm()
             {
-                
+                ProjectList = projectList,
+                TeamList = teamList
             };
             return View("Create", model);
+        }
+        [HttpPost]
+        public ActionResult Create(ProjectCooperationsVm model)
+        {
+            //TODO ОБРАБОТАТЬ ВХОДЯЩИЙ ЗАПРОС И ПРОВЕРИТЬ ЕСЛИ ВХОДЯЩИЙ ЗАПРОС УЖЕ ЕСТЬ В БД ТО ПЕРЕЕДРЕСОВАТЬ ОБРАТНО
+            //(ТО ЕСТЬ ПОСМОТРЕТЬ ЕСЛИ КОМАНДА УЖЕ РАБОТАЕТ НАД ЭТИМ ПРОЕКТОМ)
+
+            if (model is null || model.DateAssigned == DateTime.MinValue)
+            {
+                return RedirectToAction("Create");
+            }
+            ProjectCooperaionsModel projectCooperations = new ProjectCooperaionsModel()
+            {
+                Project_Id = model.Project_Id,
+                Team_Id = model.Team_Id,
+                DateAssigned = model.DateAssigned
+            };
+            try
+            {
+                
+                _projectCooperaionsService.Check(projectCooperations); // Проверить существует ли уже данная комбинация проект - команда, если да, то редирект обратно
+                _projectCooperaionsService.Create(projectCooperations);
+            }
+            catch (Exception)
+            {
+
+                return RedirectToAction("Create");
+            }
+            return RedirectToAction("Index");
+
+            return Redirect("Index");
         }
 
 

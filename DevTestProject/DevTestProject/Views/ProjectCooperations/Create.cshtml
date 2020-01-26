@@ -1,0 +1,48 @@
+﻿@model DevTestProject.ViewModel.ProjectCooperationsVm
+
+
+    <div class="row">
+
+        @using (Html.BeginForm("Create", "ProjectCooperations", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.HiddenFor(m => m.Id)
+            @Html.AntiForgeryToken()
+            <h4>Create project cooperations</h4>
+            <hr />
+            @Html.ValidationSummary()
+
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Project_Id, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.Project_Id, Model.ProjectList, new { @class = "form-control", @placeholder = "Set team" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Team_Id, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.Team_Id, Model.TeamList, new { @class = "form-control", @placeholder = "Set team" })
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.DateAssigned, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.DateAssigned, new { @class = "form-control", type = "date" })
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-5">
+                    <input type="submit" class="btn btn-success" value="Create" />
+                    <input class="btn btn-primary" type="button" value="Cancel" onclick="location.href='@Url.Action("Index")';" />
+                </div>
+
+            </div>
+        }
+
+    </div>
