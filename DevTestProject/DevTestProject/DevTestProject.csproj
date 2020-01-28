@@ -130,6 +130,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\Helper.cs" />
     <Compile Include="Models\EmployeesModel.cs" />
     <Compile Include="Models\ProjectCooperaionsModel.cs" />
     <Compile Include="Models\ProjectsModel.cs" />
@@ -147,6 +149,7 @@
     <Compile Include="Services\Interfaces\ITeamsService.cs" />
     <Compile Include="Services\Interfaces\IWorkItemsService.cs" />
     <Compile Include="ViewModel\EmployeesVm.cs" />
+    <Compile Include="ViewModel\HomeVm.cs" />
     <Compile Include="ViewModel\ProjectCooperationsVm.cs" />
     <Compile Include="ViewModel\ProjectsVm.cs" />
     <Compile Include="ViewModel\TeamsVm.cs" />
@@ -164,7 +167,6 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
-    <Content Include="Scripts\CreateWorkItemAjaxRequest.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -175,7 +177,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\EditWorkItemAjaxRequest.js" />
+    <Content Include="Scripts\WorkItemAjaxRequest.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -204,6 +206,7 @@
     <Content Include="Views\WorkItems\Edit.cshtml" />
     <Content Include="Views\ProjectCooperations\Index.cshtml" />
     <Content Include="Views\ProjectCooperations\Create.cshtml" />
+    <Content Include="Views\ProjectCooperations\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

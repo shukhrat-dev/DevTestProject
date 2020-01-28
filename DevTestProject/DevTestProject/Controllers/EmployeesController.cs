@@ -1,11 +1,9 @@
 ﻿using DevTestProject.Models;
 using DevTestProject.Services.Classes;
-using DevTestProject.Services.Interfaces;
 using DevTestProject.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace DevTestProject.Controllers
@@ -15,40 +13,61 @@ namespace DevTestProject.Controllers
         private readonly EmployeesService _employeesService = new EmployeesService(); 
         private readonly TeamsService _teamService = new TeamsService();
         // GET: Employees
-        public ActionResult Index(int page = 1, int itemOnPage = 1, string message = null)
+        public ActionResult Index()
         {
-            #region Pager
-            int Page = page <= 1 ? 1 : page;
-            int ItemOnPage = itemOnPage;
-            #endregion
+            string errorMsg = String.Empty;
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
 
             List<EmployeesModel> employees = new List<EmployeesModel>();
-            employees = _employeesService.GetAllEmployees();
-            if (!employees.Any() || employees is null)
+            List<TeamsModel> teamNames = new List<TeamsModel>();
+            try
             {
-                throw new NullReferenceException();
+                employees = _employeesService.GetAllEmployees();
+                teamNames = _teamService.GetTeams();
             }
-            int employeesAmount = employees.Count();
-            int employeesForOnePage = employeesAmount / itemOnPage;
-            employees = employees.Take(employeesForOnePage).ToList();
-            List<TeamsModel> teamNames = _teamService.GetTeams();
+            catch (Exception e)
+            {
+
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Index", "Home");
+            }
+            
             EmployeesVm model = new EmployeesVm()
             {
                 Employees = employees,
-                EmployeesForPage = employeesForOnePage,
-                ItemOnPage = itemOnPage,
-                Page = page,
-                TeamNames = teamNames
+                TeamNames = teamNames,
+                ErrorMsg = errorMsg
                 
             };
             return View("Index", model);
         }
         public ActionResult Create()
         {
-            List<SelectListItem> teamList = GetTeamList();
+            string errorMsg = String.Empty;
+            if(TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
+
+            List<SelectListItem> teamList = new List<SelectListItem>();
+            try
+            {
+                teamList = Utils.Helper.GetTeamList();
+            }
+            catch (Exception e)
+            {
+
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Index", "Home");
+            }
+            
             EmployeesVm model = new EmployeesVm()
             {
-                TeamList = teamList
+                TeamList = teamList,
+                ErrorMsg = errorMsg
             };
 
             return View("Create", model);
@@ -60,11 +79,20 @@ namespace DevTestProject.Controllers
             {
                 return RedirectToAction("Index");
             }
-
-            if (string.IsNullOrWhiteSpace(model.Email)) //TODO RENDER SOME TEXT FOR SHOWING WHY USER CANT CREATE IT
+            if(String.IsNullOrWhiteSpace(model.FirstName) || String.IsNullOrWhiteSpace(model.LastName) || String.IsNullOrWhiteSpace(model.Email))
             {
+                TempData["error"] = $"It is necessary to fill everything. Middlename if possible.";
                 return RedirectToAction("Create");
             }
+
+            EmailAddressAttribute emailAdressAttr = new EmailAddressAttribute();
+
+            if(!emailAdressAttr.IsValid(model.Email))
+            {
+                TempData["error"] = $"Email typed wrong";
+                return RedirectToAction("Create");
+            }
+
 
             EmployeesModel employee = new EmployeesModel()
             {
@@ -74,15 +102,43 @@ namespace DevTestProject.Controllers
                 MiddleName = model.MiddleName,
                 Team_Id = model.Team_Id,
             };
-            _employeesService.Create(employee);
+            try
+            {
+                if(!_employeesService.Create(employee))
+                {
+                    TempData["error"] = $"Problems with create employee (Service error \"Create\").";
+                    return RedirectToAction("Create");
+                }
+            }
+            catch (Exception e)
+            {
+                TempData["error"] = $"Problems with saving information to database (services). {e.Message}";
+                return RedirectToAction("Create");
+            }
+
             return RedirectToAction("Index");
 
         }
         public ActionResult Edit(int employee_id)
         {
+            string errorMsg = String.Empty;
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
+            EmployeesModel employee = new EmployeesModel();
+            List<SelectListItem> teamList = new List<SelectListItem>();
+            try
+            {
+                employee = _employeesService.GetEmployee(employee_id);
+                teamList = Utils.Helper.GetTeamList(employee.Team_Id);
+            }
+            catch (Exception e)
+            {
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Index", "Home");
+            }
             
-            EmployeesModel employee = _employeesService.GetEmployee(employee_id);
-            List<SelectListItem> teamList = GetTeamList(employee.Team_Id);
             EmployeesVm employeeVm = new EmployeesVm()
             {
                 Id = employee.Id,
@@ -91,7 +147,8 @@ namespace DevTestProject.Controllers
                 LastName = employee.LastName,
                 Email = employee.Email,
                 Team_Id = employee.Team_Id,
-                TeamList = teamList
+                TeamList = teamList,
+                ErrorMsg = errorMsg
 
             };
             return View("Edit", employeeVm);
@@ -104,6 +161,18 @@ namespace DevTestProject.Controllers
                 return RedirectToAction("Index");
             }
 
+            if (String.IsNullOrWhiteSpace(model.FirstName) || String.IsNullOrWhiteSpace(model.LastName) || String.IsNullOrWhiteSpace(model.Email))
+            {
+                TempData["error"] = $"It is necessary to fill everything. Middlename if possible.";
+                return RedirectToAction("Edit", new { employee_id = model.Id });
+            }
+            EmailAddressAttribute emailAdressAttr = new EmailAddressAttribute();
+
+            if (!emailAdressAttr.IsValid(model.Email))
+            {
+                TempData["error"] = $"Email typed wrong";
+                return RedirectToAction("Create");
+            }
             EmployeesModel employee = new EmployeesModel()
             {
                 Id = model.Id,
@@ -116,71 +185,41 @@ namespace DevTestProject.Controllers
 
             try
             {
-                _employeesService.Update(employee);
+                if (!_employeesService.Update(employee))
+                {
+                    TempData["error"] = $"Problems with updating employee (Service error \"Update/Edit\").";
+                    return RedirectToAction("Edit", new { employee_id = model.Id });
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return RedirectToAction("Edit", model);
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Edit", new { employee_id = model.Id });
             }
 
             return RedirectToAction("Index");
         }
         public ActionResult Delete(int employee_id)
         {
-            EmployeesModel employee = _employeesService.GetEmployee(employee_id);
-            _employeesService.Delete(employee);
+            EmployeesModel employee = new EmployeesModel();
+            try
+            {
+                employee = _employeesService.GetEmployee(employee_id);
+                if(!_employeesService.Delete(employee))
+                {
+                    TempData["error"] = $"Problems with deleting employee (Service error \"Delete\").";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception e)
+            {
+
+                TempData["error"] = $"Problems with getting information from database (services) or deleting information. {e.Message}";
+                return RedirectToAction("Index");
+            }
+
+            
             return RedirectToAction("Index");
         }
-
-
-        #region Helper
-        private List<SelectListItem> GetTeamList()
-        {
-            List<TeamsModel> teams = new List<TeamsModel>();
-            List<SelectListItem> teamList = new List<SelectListItem>();
-            teams = _teamService.GetTeams();
-            foreach (var team in teams)
-            {
-                teamList.Add(
-                    new SelectListItem
-                    {
-                        Text = team.Id.ToString(),
-                        Value = team.Id.ToString(),
-                        
-                    });
-            }
-            return teamList;
-        }
-        private List<SelectListItem> GetTeamList(int teamId)
-        {
-            List<TeamsModel> teams = new List<TeamsModel>();
-            List<SelectListItem> teamList = new List<SelectListItem>();
-            teams = _teamService.GetTeams();
-            foreach (var team in teams)
-            {
-                if (teamId == team.Id)
-                {
-                    teamList.Add(
-                    new SelectListItem
-                    {
-                        Text = team.Id.ToString(),
-                        Value = team.Id.ToString(),
-                        Selected = true
-                    });
-                }
-                else 
-                {
-                    teamList.Add(
-                    new SelectListItem
-                    {
-                        Text = team.Id.ToString(),
-                        Value = team.Id.ToString()
-                    });
-                }
-
-            }
-            return teamList;
-        }
-        #endregion
     }
 }

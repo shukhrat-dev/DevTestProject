@@ -14,6 +14,7 @@ namespace DevTestProject.Services.Interfaces
         ProjectCooperaionsModel GetProjectCooperation(int projectCooperation_id);
         bool Update(ProjectCooperaionsModel projectCooperation);
         bool Delete(int projectCooperaion_id);
+        bool CheckIfRecordExist(ProjectCooperaionsModel projectCooperations);
 
 
     }

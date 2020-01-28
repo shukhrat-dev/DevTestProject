@@ -11,12 +11,12 @@ namespace DevTestProject.Services.Classes
 {
     public class WorkItemsService : IWorkItemsService
     {
-        private string ConnectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-        private string TableName = "[dbo].[work_items]";
-        private string Projects = "[dbo].[projects]";
-        private string ProjectsCooperation = "[dbo].[project_cooperation]";
-        private string Employees = "[dbo].[employees]";
-        private string Teams = "[dbo].[teams]";
+        private readonly string ConnectionString = Utils.Constants.ConnectionString;
+        private readonly string WorkItemsTable = Utils.Constants.WORK_ITEMS_TABLE;
+        private readonly string ProjectsTable = Utils.Constants.PROJECTS_TABLE;
+        private readonly string ProjectsCooperationTable = Utils.Constants.PROJECT_COOPERATION_TABLE;
+        private readonly string EmployeesTable = Utils.Constants.EMPLOYEES_TABLE;
+        private readonly string TeamsTable = Utils.Constants.TEAMS_TABLE;
         public bool Create(WorkItemsModel workItem)
         {
             if (workItem == null)
@@ -33,7 +33,7 @@ namespace DevTestProject.Services.Classes
                     string dataCreated = String.Format("{0}/{1}/{2}", workItem.DateCreated.Year, workItem.DateCreated.Month, workItem.DateCreated.Day);
                     string dataDue = String.Format("{0}/{1}/{2}", workItem.DateDue.Year, workItem.DateDue.Month, workItem.DateDue.Day);
 
-                    string queryString = $"INSERT INTO {TableName} (Name, Description, Project_Id, Employee_Id, DateCreated, DateDue, DateStarted, DateFinished) " +
+                    string queryString = $"INSERT INTO {WorkItemsTable} (Name, Description, Project_Id, Employee_Id, DateCreated, DateDue, DateStarted, DateFinished) " +
                         $"VALUES (" +
                         $"'{workItem.Name}'," +
                         $"'{workItem.Description}', " +
@@ -49,7 +49,7 @@ namespace DevTestProject.Services.Classes
                     if (string.IsNullOrEmpty(dataFinished))
                         queryString += "NULL) ";
                     else
-                        queryString += $"{dataFinished}') ";
+                        queryString += $"{dataFinished}) ";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -69,7 +69,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"DELETE FROM {TableName} WHERE {TableName}.Id = {workItem_id}";
+                    string queryString = $"DELETE FROM {WorkItemsTable} WHERE {WorkItemsTable}.Id = {workItem_id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -91,12 +91,12 @@ namespace DevTestProject.Services.Classes
                 using(SqlConnection connection = new SqlConnection(ConnectionString))
                 {
                     string queryString = "SELECT empl.Id as employee_id " +
-                                         $"FROM {Projects} proj " +
-                                         $"JOIN {ProjectsCooperation} proj_coop  " +
+                                         $"FROM {ProjectsTable} proj " +
+                                         $"JOIN {ProjectsCooperationTable} proj_coop  " +
                                          "ON proj.Id = proj_coop.Project_Id  " +
-                                         $"JOIN {Teams} tms  " +
+                                         $"JOIN {TeamsTable} tms  " +
                                          "ON tms.Id = proj_coop.Team_Id  " +
-                                         $"JOIN {Employees} empl  " +
+                                         $"JOIN {EmployeesTable} empl  " +
                                          "ON empl.Team_Id = tms.Id " +
                                          $"WHERE proj.Id = {project_id}";
                     connection.Open();
@@ -125,7 +125,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName} WHERE {TableName}.id = {workItem_id};";
+                    string queryString = $"SELECT * FROM {WorkItemsTable} WHERE {WorkItemsTable}.id = {workItem_id};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -174,7 +174,7 @@ namespace DevTestProject.Services.Classes
                 
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"UPDATE {TableName} " +
+                    string queryString = $"UPDATE {WorkItemsTable} " +
                         $"SET " +
                         $"Name = '{workItem.Name}', " +
                         $"Description = '{workItem.Description}', " +
@@ -189,9 +189,9 @@ namespace DevTestProject.Services.Classes
                     if (string.IsNullOrEmpty(dataFinished))
                         queryString += $"DateFinished = NULL ";
                     else
-                        queryString += $"DateFinished = CAST('{dataFinished}' as DATETIME), ";
+                        queryString += $"DateFinished = CAST('{dataFinished}' as DATETIME) ";
                          
-                        queryString += $"WHERE {TableName}.Id = {workItem.Id}";
+                        queryString += $"WHERE {WorkItemsTable}.Id = {workItem.Id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -212,7 +212,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName};";
+                    string queryString = $"SELECT * FROM {WorkItemsTable};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -238,7 +238,7 @@ namespace DevTestProject.Services.Classes
 
                             workItems.Add(workItem);
                         }
-                        catch (Exception e)
+                        catch (Exception )
                         {
                             return new List<WorkItemsModel>();
                         }
@@ -247,7 +247,7 @@ namespace DevTestProject.Services.Classes
 
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return new List<WorkItemsModel>();
             }

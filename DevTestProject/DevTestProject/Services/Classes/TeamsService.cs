@@ -11,10 +11,10 @@ namespace DevTestProject.Services.Classes
 {
     public class TeamsService : ITeamsService
     {
-        private string ConnectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-        private string TableName = "[dbo].[teams]";
-        private string ProjectsCooperation = "[dbo].[project_cooperation]";
-        private string Projects = "[dbo].[projects]";
+        private readonly string ConnectionString = Utils.Constants.ConnectionString;
+        private readonly string TeamsTable = Utils.Constants.TEAMS_TABLE;
+        private readonly string ProjectsCooperationTable = Utils.Constants.PROJECT_COOPERATION_TABLE;
+        private readonly string ProjectsTable = Utils.Constants.PROJECTS_TABLE;
         public bool Create(TeamsModel team)
         {
             if (team == null)
@@ -25,7 +25,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"INSERT INTO {TableName} (Name) " +
+                    string queryString = $"INSERT INTO {TeamsTable} (Name) " +
                         $"VALUES ('{team.Name}')";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
@@ -34,7 +34,7 @@ namespace DevTestProject.Services.Classes
                     return number > 0 ? true : false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -46,7 +46,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"DELETE FROM {TableName} WHERE {TableName}.Id = {team_id}";
+                    string queryString = $"DELETE FROM {TeamsTable} WHERE {TeamsTable}.Id = {team_id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -54,7 +54,7 @@ namespace DevTestProject.Services.Classes
                     return number > 0 ? true : false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -67,7 +67,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName} WHERE {TableName}.id = {team_id};";
+                    string queryString = $"SELECT * FROM {TeamsTable} WHERE {TeamsTable}.id = {team_id};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -81,7 +81,7 @@ namespace DevTestProject.Services.Classes
                             team.Name = reader["Name"].ToString();
 
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             return new TeamsModel();
                         }
@@ -89,7 +89,7 @@ namespace DevTestProject.Services.Classes
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new TeamsModel();
             }
@@ -105,7 +105,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName};";
+                    string queryString = $"SELECT * FROM {TeamsTable};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -120,7 +120,7 @@ namespace DevTestProject.Services.Classes
 
                             teams.Add(team);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             return new List<TeamsModel>();
                         }
@@ -129,7 +129,7 @@ namespace DevTestProject.Services.Classes
 
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new List<TeamsModel>();
             }
@@ -146,11 +146,11 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString =  $"SELECT {TableName}.Name as teams_name, count(proj.Id) as project_amount "
-                                        + $"FROM {TableName} "
-                                        + $"JOIN {ProjectsCooperation} project_coop ON {TableName}.Id = project_coop.Team_Id "
-                                        + $"JOIN {Projects} proj ON project_coop.Project_Id = proj.Id "
-                                        + $"GROUP BY {TableName}.Name";
+                    string queryString =  $"SELECT {TeamsTable}.Name as teams_name, count(proj.Id) as project_amount "
+                                        + $"FROM {TeamsTable} "
+                                        + $"JOIN {ProjectsCooperationTable} project_coop ON {TeamsTable}.Id = project_coop.Team_Id "
+                                        + $"JOIN {ProjectsTable} proj ON project_coop.Project_Id = proj.Id "
+                                        + $"GROUP BY {TeamsTable}.Name";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -163,7 +163,7 @@ namespace DevTestProject.Services.Classes
                             int projectsCount = int.Parse(reader["project_amount"].ToString());
                             projectsAmount.Add(teamName, projectsCount);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             return new Dictionary<string, int>();
                         }
@@ -193,9 +193,9 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"UPDATE {TableName} " +
+                    string queryString = $"UPDATE {TeamsTable} " +
                         $"SET Name = '{team.Name}' " +
-                        $" WHERE {TableName}.Id = {team.Id}"; ;
+                        $" WHERE {TeamsTable}.Id = {team.Id}"; ;
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();

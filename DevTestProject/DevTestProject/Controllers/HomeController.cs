@@ -1,9 +1,5 @@
-﻿using DevTestProject.Models;
-using DevTestProject.Services.Classes;
+﻿using DevTestProject.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace DevTestProject.Controllers
@@ -12,7 +8,14 @@ namespace DevTestProject.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            string errorMsg = String.Empty;
+            HomeVm model = new HomeVm();
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
+            model.ErrorMsg = errorMsg;
+            return View("Index", model);
         }
 
         public ActionResult About()

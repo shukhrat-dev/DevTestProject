@@ -1,5 +1,12 @@
 ﻿@model DevTestProject.ViewModel.WorkItemsVm
-
+@if (!String.IsNullOrEmpty(Model.ErrorMsg))
+{
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        @Model.ErrorMsg;
+    </div>
+}
 
 <div class="row">
 
@@ -7,7 +14,7 @@
     {
         @Html.HiddenFor(m => m.Id)
         @Html.AntiForgeryToken()
-        <h4>Work item editing</h4>
+        <h2>Work item editing</h2>
         <hr />
         @Html.ValidationSummary()
         <div class="form-group">
@@ -77,4 +84,4 @@
 </div>
 
 @Scripts.Render("~/bundles/jquery")
-@Scripts.Render("~/bundles/editWorkItemAjaxRequest");
+@Scripts.Render("~/bundles/WorkItemAjaxRequest");

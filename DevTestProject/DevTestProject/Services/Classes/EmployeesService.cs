@@ -8,10 +8,10 @@ using System;
 namespace DevTestProject.Services.Classes
 {
     public class EmployeesService : IEmployeesService
-    {    
-      
-        private string ConnectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-        private string TableName = "[dbo].[employees]";
+    {
+
+        private readonly string ConnectionString = Utils.Constants.ConnectionString;
+        private readonly string EmployeesTable = Utils.Constants.EMPLOYEES_TABLE;
         
         public bool Create(EmployeesModel employee)
         {
@@ -25,7 +25,7 @@ namespace DevTestProject.Services.Classes
             {                
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"INSERT INTO {TableName} (FirstName, MiddleName, LastName, Email, Team_Id) " +
+                    string queryString = $"INSERT INTO {EmployeesTable} (FirstName, MiddleName, LastName, Email, Team_Id) " +
                         $"VALUES ('{employee.FirstName}'," +
                         $"'{employee.MiddleName}', " +
                         $"'{employee.LastName}', " +
@@ -38,8 +38,9 @@ namespace DevTestProject.Services.Classes
                     return number > 0 ? true : false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                
                 return false;
             }
 
@@ -52,7 +53,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName} WHERE {TableName}.id = {employee_id};";
+                    string queryString = $"SELECT * FROM {EmployeesTable} WHERE {EmployeesTable}.id = {employee_id};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -69,7 +70,7 @@ namespace DevTestProject.Services.Classes
                             employee.Email = reader["Email"].ToString();
                             employee.Team_Id = int.Parse(reader["Team_Id"].ToString());
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             return new EmployeesModel();
                         }
@@ -77,7 +78,7 @@ namespace DevTestProject.Services.Classes
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new EmployeesModel();
             }
@@ -92,49 +93,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName};";
-                    connection.Open();
-                    SqlCommand command = new SqlCommand(queryString, connection);
-                    command.Prepare();
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        try
-                        {
-                            EmployeesModel employee = new EmployeesModel();
-                            employee.Id = int.Parse(reader["Id"].ToString());
-                            employee.FirstName = reader["FirstName"].ToString();
-                            employee.MiddleName = reader["MiddleName"].ToString();
-                            employee.LastName = reader["LastName"].ToString();
-                            employee.Email = reader["Email"].ToString();
-                            employee.Team_Id = int.Parse(reader["Team_Id"].ToString());
-                            employees.Add(employee);
-                        }
-                        catch (Exception e)
-                        {
-                            return new List<EmployeesModel>();
-                        }
-
-                    }
-
-                }
-            }
-            catch (Exception e)
-            {
-                return new List<EmployeesModel>();
-            }
-            return employees;
-            
-        }
-
-        public List<EmployeesModel> GetAllEmployeesByPage(int page, int item_on_page)
-        {
-            List<EmployeesModel> employees = new List<EmployeesModel>();
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
-                {
-                    string queryString = $"SELECT * FROM {TableName} ORDER BY {TableName}.Id OFFSET {page}*{item_on_page} ROWS FETCH NEXT {item_on_page} ROWS ONLY;";
+                    string queryString = $"SELECT * FROM {EmployeesTable};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -156,19 +115,20 @@ namespace DevTestProject.Services.Classes
                         {
                             return new List<EmployeesModel>();
                         }
-                        
+
                     }
 
-                    return employees;
                 }
             }
             catch (Exception)
             {
                 return new List<EmployeesModel>();
             }
-            
+            return employees;
             
         }
+
+
 
 
         public bool Update(EmployeesModel employee)
@@ -182,13 +142,13 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"UPDATE {TableName} " +
+                    string queryString = $"UPDATE {EmployeesTable} " +
                         $"SET FirstName = '{employee.FirstName}', " +
                         $"MiddleName = '{employee.MiddleName}', " +
                         $"LastName = '{employee.LastName}', " +
                         $"Email = '{employee.Email}' , " +
                         $"Team_Id = {employee.Team_Id}" +
-                        $" WHERE {TableName}.Id = {employee.Id}";
+                        $" WHERE {EmployeesTable}.Id = {employee.Id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -212,7 +172,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"DELETE FROM {TableName} WHERE {TableName}.Id = {employee.Id}";
+                    string queryString = $"DELETE FROM {EmployeesTable} WHERE {EmployeesTable}.Id = {employee.Id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();

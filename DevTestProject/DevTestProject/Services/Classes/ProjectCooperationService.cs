@@ -11,8 +11,8 @@ namespace DevTestProject.Services.Classes
 {
     public class ProjectCooperationService : IProjectCooperationService
     {
-        private string ConnectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-        private string TableName = "[dbo].[project_cooperation]";
+        private readonly string ConnectionString = Utils.Constants.ConnectionString;
+        private readonly string ProjectCooperationsTable = Utils.Constants.PROJECT_COOPERATION_TABLE;
         public bool Create (ProjectCooperaionsModel projectCooperation)
         {
             if (projectCooperation == null)
@@ -24,7 +24,7 @@ namespace DevTestProject.Services.Classes
                 string dateAssigned = String.Format("{0}/{1}/{2}", projectCooperation.DateAssigned.Year, projectCooperation.DateAssigned.Month, projectCooperation.DateAssigned.Day);
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"INSERT INTO {TableName} (Project_Id, Team_Id, DateAssigned) " +
+                    string queryString = $"INSERT INTO {ProjectCooperationsTable} (Project_Id, Team_Id, DateAssigned) " +
                         $"VALUES ({projectCooperation.Project_Id}, {projectCooperation.Team_Id}, '{dateAssigned}')";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
@@ -33,7 +33,7 @@ namespace DevTestProject.Services.Classes
                     return number > 0 ? true : false;
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return false;
             }
@@ -45,7 +45,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"DELETE FROM {TableName} WHERE {TableName}.Id = {projectCooperaion_id}";
+                    string queryString = $"DELETE FROM {ProjectCooperationsTable} WHERE {ProjectCooperationsTable}.Id = {projectCooperaion_id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -53,7 +53,7 @@ namespace DevTestProject.Services.Classes
                     return number > 0 ? true : false;
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return false;
             }
@@ -67,7 +67,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName};";
+                    string queryString = $"SELECT * FROM {ProjectCooperationsTable};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -83,7 +83,7 @@ namespace DevTestProject.Services.Classes
                             projectCooperation.DateAssigned = DateTime.Parse(reader["DateAssigned"].ToString());
                             projectCooperations.Add(projectCooperation);
                         }
-                        catch (Exception e)
+                        catch (Exception )
                         {
                             return new List<ProjectCooperaionsModel>();
                         }
@@ -92,7 +92,7 @@ namespace DevTestProject.Services.Classes
 
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return new List<ProjectCooperaionsModel>();
             }
@@ -106,7 +106,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName} WHERE {TableName}.id = {projectCooperation_id};";
+                    string queryString = $"SELECT * FROM {ProjectCooperationsTable} WHERE {ProjectCooperationsTable}.id = {projectCooperation_id};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -119,10 +119,10 @@ namespace DevTestProject.Services.Classes
                             projectCooperation.Id = int.Parse(reader["Id"].ToString());
                             projectCooperation.Project_Id = int.Parse(reader["Project_Id"].ToString());
                             projectCooperation.Team_Id = int.Parse(reader["Team_Id"].ToString());
-                            projectCooperation.DateAssigned = DateTime.Parse(reader["Team_Id"].ToString());
+                            projectCooperation.DateAssigned = DateTime.Parse(reader["DateAssigned"].ToString());
 
                         }
-                        catch (Exception e)
+                        catch (Exception )
                         {
                             return new ProjectCooperaionsModel();
                         }
@@ -130,7 +130,7 @@ namespace DevTestProject.Services.Classes
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return new ProjectCooperaionsModel();
             }
@@ -140,7 +140,7 @@ namespace DevTestProject.Services.Classes
 
         public bool Update(ProjectCooperaionsModel projectCooperation)
         {
-            if (projectCooperation is null)
+            if (projectCooperation is null || projectCooperation.DateAssigned ==  DateTime.MinValue)
             {
                 return false;
             }
@@ -151,11 +151,11 @@ namespace DevTestProject.Services.Classes
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
                     
-                    string queryString = $"UPDATE {TableName} " +
-                                            $"SET Project_Id = '{projectCooperation.Project_Id}', " +
+                    string queryString = $"UPDATE {ProjectCooperationsTable} " +
+                                            $"SET Project_Id = {projectCooperation.Project_Id}, " +
                                             $"Team_Id = {projectCooperation.Team_Id}, " +
-                                            $"DateAssigned = CAST('{dateAssigned}' as DATETIME), " +
-                                            $"WHERE {TableName}.Id = {projectCooperation.Id}";
+                                            $"DateAssigned = CAST('{dateAssigned}' as DATETIME) " +
+                                            $"WHERE {ProjectCooperationsTable}.Id = {projectCooperation.Id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -167,6 +167,31 @@ namespace DevTestProject.Services.Classes
             {
                 return false;
             }
+        }
+        public bool CheckIfRecordExist(ProjectCooperaionsModel projectCooperations)
+        {            
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    string queryString = $"SELECT * FROM {ProjectCooperationsTable} WHERE {ProjectCooperationsTable}.Project_Id = {projectCooperations.Project_Id} AND {ProjectCooperationsTable}.Team_Id = {projectCooperations.Team_Id};";
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(queryString, connection);
+                    command.Prepare();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    if(reader.HasRows)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception )
+            {
+                return false; ;
+            }
+
         }
     }
 }

@@ -9,10 +9,10 @@ namespace DevTestProject.Services.Classes
 {
     public class ProjectsService : IProjectsService
     {
-        private string ConnectionString = ConfigurationManager.ConnectionStrings["ConString"].ConnectionString;
-        private string TableName = "[dbo].[projects]";
-        private string ProjectsCooperation = "[dbo].[project_cooperation]";
-        private string Teams = "[dbo].[teams]";
+        private readonly string ConnectionString = Utils.Constants.ConnectionString;
+        private readonly string ProjectsTable = Utils.Constants.PROJECTS_TABLE;
+        private readonly string ProjectsCooperationTable = Utils.Constants.PROJECT_COOPERATION_TABLE;
+        private readonly string TeamsTable = Utils.Constants.TEAMS_TABLE;
         public bool Create(ProjectsModel project)
         {
             {
@@ -26,7 +26,7 @@ namespace DevTestProject.Services.Classes
                     {
                         string dateStart = String.Format("{0}/{1}/{2}", project.DateStart.Year, project.DateStart.Month, project.DateStart.Day);
                         string dateDue = String.Format("{0}/{1}/{2}", project.DateDue.Year, project.DateDue.Month, project.DateDue.Day);
-                        string queryString = $"INSERT INTO {TableName} (Name, ProjectManager_Id, DateStart, DateDue) " +
+                        string queryString = $"INSERT INTO {ProjectsTable} (Name, ProjectManager_Id, DateStart, DateDue) " +
                                              $"VALUES (" +
                                              $"'{project.Name}', " +
                                              $"{project.ProjectManager_Id}, " +
@@ -40,7 +40,7 @@ namespace DevTestProject.Services.Classes
                         return number > 0 ? true : false;
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -53,7 +53,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"DELETE FROM {TableName} WHERE {TableName}.Id = {project_id}";
+                    string queryString = $"DELETE FROM {ProjectsTable} WHERE {ProjectsTable}.Id = {project_id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -61,7 +61,7 @@ namespace DevTestProject.Services.Classes
                     return number > 0 ? true : false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -79,12 +79,12 @@ namespace DevTestProject.Services.Classes
                 string dateDue = String.Format("{0}/{1}/{2}", project.DateDue.Year, project.DateDue.Month, project.DateDue.Day);
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"UPDATE {TableName} " +
+                    string queryString = $"UPDATE {ProjectsTable} " +
                                             $"SET Name = '{project.Name}', " +
                                             $"ProjectManager_Id = {project.ProjectManager_Id}, " +
                                             $"DateStart = CAST('{dateStart}' as DATETIME), " +
                                             $"DateDue = CAST('{dateDue}' as DATETIME) " +
-                                            $"WHERE {TableName}.Id = {project.Id}";
+                                            $"WHERE {ProjectsTable}.Id = {project.Id}";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -106,7 +106,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName};";
+                    string queryString = $"SELECT * FROM {ProjectsTable};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -124,7 +124,7 @@ namespace DevTestProject.Services.Classes
 
                             projects.Add(project);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             return new List<ProjectsModel>();
                         }
@@ -133,7 +133,7 @@ namespace DevTestProject.Services.Classes
 
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return new List<ProjectsModel>();
             }
@@ -147,7 +147,7 @@ namespace DevTestProject.Services.Classes
             {
                 using (SqlConnection connection = new SqlConnection(ConnectionString))
                 {
-                    string queryString = $"SELECT * FROM {TableName} WHERE {TableName}.id = {project_id};";
+                    string queryString = $"SELECT * FROM {ProjectsTable} WHERE {ProjectsTable}.id = {project_id};";
                     connection.Open();
                     SqlCommand command = new SqlCommand(queryString, connection);
                     command.Prepare();
@@ -162,7 +162,7 @@ namespace DevTestProject.Services.Classes
                             project.DateStart = DateTime.Parse(reader["DateStart"].ToString());
                             project.DateDue = DateTime.Parse(reader["DateDue"].ToString());
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             return new ProjectsModel();
                         }
@@ -179,48 +179,6 @@ namespace DevTestProject.Services.Classes
 
             return project;
 
-        }
-
-        public Dictionary<string, string> GetTeamWorkedOnProject()
-        {
-            Dictionary<string, string> teamOnProject = new Dictionary<string, string>();
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
-                {
-                    string queryString = $"SELECT {TableName}.Name, team.Name as teams_name "
-                                        + $"FROM {TableName} "
-                                        + $"JOIN {ProjectsCooperation} project_coop ON {TableName}.Id = project_coop.Team_Id "
-                                        + $"JOIN {Teams} team ON project_coop.Project_Id = team.Id;";
-                    connection.Open();
-                    SqlCommand command = new SqlCommand(queryString, connection);
-                    command.Prepare();
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        try
-                        {
-                            string projectName = reader["Name"].ToString();
-                            string teamName = reader["teams_name"].ToString();
-                            teamOnProject.Add(teamName, projectName);
-                        }
-                        catch (Exception e)
-                        {
-                            return new Dictionary<string, string>();
-                        }
-
-                    }
-
-                }
-
-            }
-            catch (Exception)
-            {
-
-                return new Dictionary<string, string>();
-            }
-
-            return teamOnProject;
         }
     }
 }

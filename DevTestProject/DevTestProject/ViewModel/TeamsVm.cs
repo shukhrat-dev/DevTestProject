@@ -9,6 +9,7 @@ namespace DevTestProject.ViewModel
     public class TeamsVm : TeamsModel
     {
         public List<TeamsModel> TeamList { get; set; }
-        public Dictionary<string, int> TeamProjects{ get; set; } 
+        public Dictionary<string, int> TeamProjects{ get; set; }
+        public string ErrorMsg { get; set; }
     }
 }

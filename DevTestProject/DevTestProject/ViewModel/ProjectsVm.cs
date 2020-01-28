@@ -10,7 +10,9 @@ namespace DevTestProject.ViewModel
     public class ProjectsVm : ProjectsModel
     {
         public List<ProjectsModel> ProjectList;
-        public Dictionary<string, string> TeamsOnProject { get; set; }
+        public List<EmployeesModel> Employees { get; set; }
         public List<SelectListItem> EmployeeList { get; set; }
+        public Dictionary<int, int> WorkItemsOnProject { get; set; }
+        public string ErrorMsg { get; set; }
     }
 }

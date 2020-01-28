@@ -1,4 +1,5 @@
 ﻿@model DevTestProject.ViewModel.TeamsVm
+    <h2>Teams</h2>
     <div class="row">
         <div class="col-md-2">
             <input class="btn btn-success" type="button" value="Create team" onclick="location.href='@Url.Action("Create", "Teams")';" />
@@ -6,7 +7,15 @@
     </div>
 
     <div class="row">
-        <div class="col-md-8">
+        @if (!String.IsNullOrEmpty(Model.ErrorMsg))
+        {
+            <div class="alert alert-danger" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                @Model.ErrorMsg;
+            </div>
+        }
+        <div class="col-md-12">
             <table class="table">
                 <thead class="thead-dark">
                     <tr>
@@ -19,37 +28,29 @@
                 <tbody>
                     @foreach (var team in Model.TeamList)
                     {
-                    <tr>
-                        <th scope="row">@team.Id</th>
-                        <td>@team.Name</td>
-                        <td>
-                            @foreach(var project in Model.TeamProjects)
-                            {
-                                if(project.Key.Contains(team.Name))
+                        <tr>
+                            <th scope="row">@team.Id</th>
+                            <td>@team.Name</td>
+                            <td>
+                                @foreach (var project in Model.TeamProjects)
                                 {
-                                    @project.Value
-                                }                                
-                            }
-                        </td>
-                        <td>
-                            <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { team_id = team.Id})';" />
-                        </td>
-                        <td>
-                            <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { team_id = team.Id})';" />
-                        </td>
-                    </tr>
-                        
+                                    if (project.Key.Contains(team.Name))
+                                    {
+                                        @project.Value
+                                    }
+                                }
+                            </td>
+                            <td>
+                                <input class="btn btn-info" type="button" value="Edit" onclick="location.href='@Url.Action("Edit", new { team_id = team.Id})';" />
+                            </td>
+                            <td>
+                                <input class="btn btn-danger" type="button" value="Delete" onclick="location.href='@Url.Action("Delete", new { team_id = team.Id})';" />
+                            </td>
+                        </tr>
+
                     }
                 </tbody>
             </table>
-            @*<nav aria-label="Employee pagination">
-
-                <ul class="pagination">
-                    <li class="page-item">@Html.ActionLink("Previous", "Index", new { page = Model.Page - 1, itemOnPage = Model.ItemOnPage })</li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>*@
         </div>
 
 

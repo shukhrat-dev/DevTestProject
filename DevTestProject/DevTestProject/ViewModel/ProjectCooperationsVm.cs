@@ -12,5 +12,8 @@ namespace DevTestProject.ViewModel
         public List<ProjectCooperaionsModel> ProjectCooperations { get; set; }
         public List<SelectListItem> ProjectList { get; set; }
         public List<SelectListItem> TeamList { get; set; }
+        public List<ProjectsModel> AllProjects { get; set; }
+        public List<TeamsModel> AllTeams { get; set; }
+        public string ErrorMsg { get; set; }
     }
 }

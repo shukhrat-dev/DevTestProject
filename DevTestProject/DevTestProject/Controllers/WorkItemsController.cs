@@ -3,8 +3,6 @@ using DevTestProject.Services.Classes;
 using DevTestProject.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace DevTestProject.Controllers
@@ -17,19 +15,25 @@ namespace DevTestProject.Controllers
         // GET: WorkItems
         public ActionResult Index()
         {
+            string errorMsg = String.Empty;
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
             List<WorkItemsModel> workItems = new List<WorkItemsModel>();
-
             try
             {
                 workItems = _workItemService.GetAllWorkItems();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
                 return RedirectToAction("Index", "Home");
             }
             WorkItemsVm model = new WorkItemsVm()
             {
-                 WorkItems = workItems
+                 WorkItems = workItems,
+                 ErrorMsg = errorMsg
             };
             return View("Index", model);
         }
@@ -37,12 +41,34 @@ namespace DevTestProject.Controllers
 
         public ActionResult Create()
         {
-            List<SelectListItem> projectsList = GetProjectsList();
+            string errorMsg = String.Empty;
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
+            List<SelectListItem> projectsList = new List<SelectListItem>();
             List<SelectListItem> employeeList = new List<SelectListItem>();
+            try
+            {
+                projectsList = Utils.Helper.GetProjectsList();
+
+            }
+            catch (Exception e)
+            {
+
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Index", "Home");
+            }           
+
+            if(TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
             WorkItemsVm model = new WorkItemsVm()
             {
                 ProjectsList = projectsList,
-                EmployeeList = employeeList
+                EmployeeList = employeeList,
+                ErrorMsg = errorMsg
             };
             
 
@@ -52,9 +78,33 @@ namespace DevTestProject.Controllers
         [HttpPost]
         public ActionResult Create(WorkItemsVm model)
         {
+            
             if (model is null)
             {
                 return RedirectToAction("Create");
+            }
+            if (String.IsNullOrWhiteSpace(model.Name) ||
+                model.Project_Id == null || model.Project_Id == 0 ||
+                model.Employee_Id == null || model.Employee_Id == 0 ||
+                model.DateCreated == DateTime.MinValue || 
+                (model.DateCreated == DateTime.MinValue && model.DateDue == DateTime.MinValue) || 
+                model.DateCreated == DateTime.MinValue || model.DateDue == DateTime.MinValue || 
+                DateTime.Compare(model.DateCreated, model.DateDue) > 0)
+            {
+                TempData["error"] = "You did not enter information correctly. Check the information and try again.";
+                return RedirectToAction("Create");
+            }
+
+            if (model.DateStarted != null && model.DateFinished != null)
+            {
+                if (model.DateStarted.Value != DateTime.MinValue && model.DateFinished.Value != DateTime.MinValue)
+                {
+                    if (DateTime.Compare(model.DateStarted.Value, model.DateFinished.Value) > 0)
+                    {
+                        TempData["error"] = "You did not enter dates correctly. Check the dates and try again.";
+                        return RedirectToAction("Create");
+                    }
+                }
             }
             WorkItemsModel workItem = new WorkItemsModel()
             {
@@ -69,11 +119,15 @@ namespace DevTestProject.Controllers
             };
             try
             {
-                _workItemService.Create(workItem);
+                if(!_workItemService.Create(workItem))
+                {
+                    TempData["error"] = $"Problems with create work item (Service error \"Create\").";
+                    return RedirectToAction("Create");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                TempData["error"] = $"Problems with saving information to database (services). {e.Message}";
                 return RedirectToAction("Create");
             }
             return RedirectToAction("Index");
@@ -81,37 +135,64 @@ namespace DevTestProject.Controllers
 
         public ActionResult Edit(int workItem_id)
         {
+            string errorMsg = String.Empty;
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
             WorkItemsModel workItem = new WorkItemsModel();
-            List<SelectListItem> projectsList = GetProjectsList();
-            List<SelectListItem> employeeList = GetEmployeeList();
-            
-            WorkItemsVm model = new WorkItemsVm();
+            List<SelectListItem> projectsList = new List<SelectListItem>();
+            List<SelectListItem> employeeList = new List<SelectListItem>();
             try
             {
+                projectsList = Utils.Helper.GetProjectsList();
+                employeeList = Utils.Helper.GetEmployeeList();
                 workItem = _workItemService.GetWorkItem(workItem_id);
-                model.Id = workItem.Id;
-                model.Name = workItem.Name;
-                model.Description = workItem.Description;
-                model.Project_Id = workItem.Project_Id;
-                model.Employee_Id = workItem.Employee_Id;
-                model.DateCreated = workItem.DateCreated;
-                model.DateStarted = workItem.DateStarted;
-                model.DateFinished = workItem.DateFinished;
-                model.DateDue = workItem.DateDue;
-                model.ProjectsList = projectsList;
-                model.EmployeeList = employeeList;
-
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return RedirectToAction("Index");
+
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Index", "Home");
             }
 
+
+            WorkItemsVm model = new WorkItemsVm()
+            {
+                Id = workItem.Id,
+                Name = workItem.Name,
+                Description = workItem.Description,
+                Project_Id = workItem.Project_Id,
+                Employee_Id = workItem.Employee_Id,
+                DateCreated = workItem.DateCreated,
+                DateStarted = workItem.DateStarted,
+                DateFinished = workItem.DateFinished,
+                DateDue = workItem.DateDue,
+                ProjectsList = projectsList,
+                EmployeeList = employeeList,
+                ErrorMsg = errorMsg
+            };
             return View("Edit", model);
         }
         
         public ActionResult SaveEditingWorkItem(WorkItemsVm model)
         {
+            if (model is null)
+            {
+                return RedirectToAction("Edit", new { workItem_id  = model.Id} );
+            }
+            if (String.IsNullOrWhiteSpace(model.Name) ||
+                model.Project_Id == null || model.Project_Id == 0 ||
+                model.Employee_Id == null || model.Employee_Id == 0 ||
+                model.DateCreated == DateTime.MinValue ||
+                (model.DateCreated == DateTime.MinValue && model.DateDue == DateTime.MinValue) ||
+                model.DateDue == DateTime.MinValue || DateTime.Compare(model.DateCreated, model.DateDue) > 0)
+            {
+                TempData["error"] = "You did not enter information correctly. Check the information and try again.";
+                return RedirectToAction("Edit", new { workItem_id = model.Id });
+            }
+
+
             WorkItemsVm workItem = new WorkItemsVm()
             {
                 Id = model.Id,
@@ -127,11 +208,16 @@ namespace DevTestProject.Controllers
 
             try
             {
-                _workItemService.Update(workItem);
+                if(!_workItemService.Update(workItem))
+                {
+                    TempData["error"] = $"Problems with updating work item (Service error \"Update/Edit\").";
+                    return RedirectToAction("Edit", new { workItem_id = model.Id });
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return RedirectToAction("Edit", model);
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Edit", new { workItem_id = model.Id });
             }
             return RedirectToAction("Index");
         }
@@ -140,15 +226,24 @@ namespace DevTestProject.Controllers
         {
             try
             {
-                _workItemService.Delete(workItem_id);
+                if(!_workItemService.Delete(workItem_id))
+                {
+                    TempData["error"] = $"Problems with deleting work item (Service error \"Delete\").";
+                    return RedirectToAction("Index");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TempData["error"] = $"Problems with getting information from database (services) or deleting information. {e.Message}";
                 return RedirectToAction("Index");
             }
             return RedirectToAction("Index");
         }
-
+        /// <summary>
+        /// Method for getting all employees who are working on project via AJAX
+        /// </summary>
+        /// <param name="project_id"></param>
+        /// <returns></returns>
         public ActionResult GetEmployeesFromProject(string project_id)
         {
             if(string.IsNullOrWhiteSpace(project_id))
@@ -158,43 +253,6 @@ namespace DevTestProject.Controllers
             int projectId = int.Parse(project_id);
             List<int> employeesId = _workItemService.GetAllEmployeeFromProject(projectId);
             return Json(new { empId = employeesId });
-        }
-
-
-        private List<SelectListItem> GetProjectsList()
-        {
-            List<ProjectsModel> projects = new List<ProjectsModel>();
-            List<SelectListItem> projectsList = new List<SelectListItem>();
-            projects = _projectService.GetAllProjects();
-            foreach (var project in projects)
-            {
-                projectsList.Add(
-                    new SelectListItem
-                    {
-                        Text = project.Id.ToString(),
-                        Value = project.Id.ToString()
-                    });
-            }
-
-            return projectsList;
-        }
-
-        private List<SelectListItem> GetEmployeeList()
-        {
-            List<EmployeesModel> employees = new List<EmployeesModel>();
-            List<SelectListItem> employeeList = new List<SelectListItem>();
-            employees = _employeesService.GetAllEmployees();
-            foreach (var employee in employees)
-            {
-                employeeList.Add(
-                    new SelectListItem
-                    {
-                        Text = employee.Id.ToString(),
-                        Value = employee.Id.ToString()
-                    });
-            }
-
-            return employeeList;
         }
 
     }

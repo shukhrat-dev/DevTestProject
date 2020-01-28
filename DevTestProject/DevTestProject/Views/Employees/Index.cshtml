@@ -1,5 +1,5 @@
 ﻿@model DevTestProject.ViewModel.EmployeesVm
-
+<h2>Employees</h2>
 <div class="row">
     <div class="col-md-2">
         <input class="btn btn-success" type="button" value="Create employee" onclick="location.href='@Url.Action("Create", "Employees")';" />
@@ -7,8 +7,15 @@
 </div>
 
 <div class="row">
-
-    <div class="col-md-8">
+    @if (!String.IsNullOrEmpty(Model.ErrorMsg))
+    {
+        <div class="alert alert-danger" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Error:</span>
+            @Model.ErrorMsg;
+        </div>
+    }
+    <div class="col-md-12">
         <table class="table">
             <thead class="thead-dark">
                 <tr>
@@ -17,7 +24,6 @@
                     <th scope="col">Middle name</th>
                     <th scope="col">Last name</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Team number</th>
                     <th scope="col">Team name</th>
                     <th scope="col" colspan="2">User settings</th>
 
@@ -32,7 +38,6 @@
                         <td>@employee.MiddleName</td>
                         <td>@employee.LastName</td>
                         <td>@employee.Email</td>
-                        <td>@employee.Team_Id</td>
                         @foreach (var teamName in Model.TeamNames)
                         {
                             if (teamName.Id == employee.Team_Id)
@@ -51,13 +56,6 @@
                 }
             </tbody>
         </table>
-        <nav aria-label="Employee pagination">
 
-            <ul class="pagination">
-                <li class="page-item">@Html.ActionLink("Previous", "Index", new { page = Model.Page - 1, itemOnPage = Model.ItemOnPage })</li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
-        </nav>
     </div>
 </div>

@@ -22,11 +22,9 @@ namespace DevTestProject
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/editWorkItemAjaxRequest").Include(
-                      "~/Scripts/EditWorkItemAjaxRequest.js"));
+            bundles.Add(new ScriptBundle("~/bundles/WorkItemAjaxRequest").Include(
+                      "~/Scripts/WorkItemAjaxRequest.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/createWorkItemAjaxRequest").Include(
-                      "~/Scripts/CreateWorkItemAjaxRequest.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

@@ -1,54 +1,64 @@
 ﻿@model DevTestProject.ViewModel.ProjectsVm
 
-
-    <div class="row">
-
-        @using (Html.BeginForm("Create", "Projects", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-        {
-            @Html.HiddenFor(m => m.Id)
-            @Html.AntiForgeryToken()
-            <h4>Create project</h4>
-            <hr />
-            @Html.ValidationSummary()
-            <div class="form-group">
-                @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
-                </div>
-            </div>
-
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.ProjectManager_Id, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.ProjectManager_Id, Model.EmployeeList, new { @class = "form-control", @placeholder = "Set team" })
-                </div>
-            </div>
-
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.DateStart, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.DateStart, new { @class = "form-control", type = "date" })
-                </div>
-            </div>
-
-            <div class="form-group">
-                @Html.LabelFor(m => m.DateDue, new { @class = "col-md-2 control-label" })
-                <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.DateDue, new { @class = "form-control", type = "date" })
-                </div>
-            </div>
-
-
-
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-5">
-                    <input type="submit" class="btn btn-success" value="Create" />
-                    <input class="btn btn-primary" type="button" value="Cancel" onclick="location.href='@Url.Action("Index")';" />
-                </div>
-
-            </div>
-        }
-
+@if (!String.IsNullOrEmpty(Model.ErrorMsg))
+{
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        @Model.ErrorMsg;
     </div>
+}
+<div class="row">
+
+
+
+
+    @using (Html.BeginForm("Create", "Projects", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.HiddenFor(m => m.Id)
+        @Html.AntiForgeryToken()
+        <h2>Create project</h2>
+        <hr />
+        @Html.ValidationSummary()
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.ProjectManager_Id, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.ProjectManager_Id, Model.EmployeeList, new { @class = "form-control", @placeholder = "Set team" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.DateStart, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.DateStart, new { @class = "form-control", type = "date" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.DateDue, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.DateDue, new { @class = "form-control", type = "date" })
+            </div>
+        </div>
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-5">
+                <input type="submit" class="btn btn-success" value="Create" />
+                <input class="btn btn-primary" type="button" value="Cancel" onclick="location.href='@Url.Action("Index")';" />
+            </div>
+
+        </div>
+    }
+
+</div>

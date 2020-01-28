@@ -3,8 +3,6 @@ using DevTestProject.Services.Classes;
 using DevTestProject.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace DevTestProject.Controllers
@@ -13,46 +11,83 @@ namespace DevTestProject.Controllers
     {
         private readonly ProjectsService _projectService = new ProjectsService();
         private readonly EmployeesService _employeeService = new EmployeesService();
+        private readonly WorkItemsService _workItemsService = new WorkItemsService();
         // GET: Teams
         public ActionResult Index()
         {
+            string errorMsg = String.Empty;
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
             List<ProjectsModel> projects = new List<ProjectsModel>();
-            Dictionary<string, string> teamsOnProject = new Dictionary<string, string>();
+            List<WorkItemsModel> workItems = new List<WorkItemsModel>();
+            List<EmployeesModel> employees = new List<EmployeesModel>();
+            Dictionary<int, int> workItemsOnProject = new Dictionary<int, int>();
             try
             {
                 projects = _projectService.GetAllProjects();
-                teamsOnProject = _projectService.GetTeamWorkedOnProject();
+                workItems = _workItemsService.GetAllWorkItems();
+                employees = _employeeService.GetAllEmployees();
+                
+                foreach (var workItem in workItems) 
+                {
+                    foreach(var project in projects)
+                    {
+
+                        if (project.Id == workItem.Project_Id)
+                        {
+                            if(workItemsOnProject.ContainsKey(project.Id))
+                            {
+                                workItemsOnProject[project.Id] += 1;
+                            }
+                            else
+                            {
+                                workItemsOnProject.Add(project.Id, 1);
+                            }
+
+                            
+                        }
+                    }
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
                 return RedirectToAction("Index", "Home");
             }
             ProjectsVm model = new ProjectsVm()
             {
                 ProjectList = projects,
-                TeamsOnProject = teamsOnProject
+                WorkItemsOnProject = workItemsOnProject,
+                Employees = employees,
+                ErrorMsg = errorMsg
             };
             return View("Index", model);
         }
 
+
         public ActionResult Create()
         {
-            //List<EmployeesModel> employees = new List<EmployeesModel>();
-
-            //employees = _employeeService.GetAllEmployees();
-            //foreach (var employee in employees)
-            //{
-            //    employeeList.Add(
-            //        new SelectListItem
-            //        {
-            //            Text = employee.Id.ToString(),
-            //            Value = employee.Id.ToString()
-            //        });
-            //}
-            List<SelectListItem> employeeList = GetEmployeeList();
+            string errorMsg = String.Empty;
+            if(TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
+            List<SelectListItem> employeeList = new List<SelectListItem>();
+            try
+            {
+                employeeList = Utils.Helper.GetEmployeeList();
+            }
+            catch (Exception e)
+            {
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Index", "Home");
+            }
             ProjectsVm model = new ProjectsVm()
             {
-                EmployeeList = employeeList
+                EmployeeList = employeeList,
+                ErrorMsg = errorMsg
             };
             return View("Create", model);
         }
@@ -60,8 +95,12 @@ namespace DevTestProject.Controllers
         [HttpPost]
         public ActionResult Create(ProjectsVm model)
         {
-            if (model is null || model.DateStart == DateTime.MinValue || model.DateDue == DateTime.MinValue || DateTime.Compare(model.DateStart, model.DateDue) > 0)
+            if (model is null || String.IsNullOrWhiteSpace(model.Name) || 
+                model.ProjectManager_Id == 0 || model.ProjectManager_Id == null || 
+                model.DateStart == DateTime.MinValue || model.DateDue == DateTime.MinValue || 
+                DateTime.Compare(model.DateStart, model.DateDue) > 0)
             {
+                TempData["error"] = "You did not enter dates correctly or you did not fill in some fields. All fields are required.. Check the dates and try again.";
                 return RedirectToAction("Create");
             }
             ProjectsModel project = new ProjectsModel()
@@ -73,11 +112,16 @@ namespace DevTestProject.Controllers
             };
             try
             {
-                _projectService.Create(project);
+                if(!_projectService.Create(project))
+                {
+                    TempData["error"] = $"Problems with create project (Service error \"Create\").";
+                    return RedirectToAction("Create");
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
+                TempData["error"] = $"Problems with saving information to database (services). {e.Message}";
                 return RedirectToAction("Create");
             }
             return RedirectToAction("Index");
@@ -85,29 +129,45 @@ namespace DevTestProject.Controllers
 
         public ActionResult Edit(int project_id)
         {
+            string errorMsg = String.Empty;
+            if (TempData.ContainsKey("error"))
+            {
+                errorMsg = TempData["error"].ToString();
+            }
             ProjectsModel project = new ProjectsModel();
-            List<SelectListItem> employeeList = GetEmployeeList();
-            ProjectsVm model = new ProjectsVm();
+            List<SelectListItem> employeeList = new List<SelectListItem>();
             try
             {
+                employeeList = Utils.Helper.GetEmployeeList();
                 project = _projectService.GetProject(project_id);
-                model.Id = project.Id;
-                model.Name = project.Name;
-                model.ProjectManager_Id = project.ProjectManager_Id;
-                model.DateStart = project.DateStart;
-                model.DateDue = project.DateDue;
-                model.EmployeeList = employeeList;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return RedirectToAction("Index");
-            }
 
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
+                return RedirectToAction("Index", "Home");
+            }
+            ProjectsVm model = new ProjectsVm();
+            model.Id = project.Id;
+            model.Name = project.Name;
+            model.ProjectManager_Id = project.ProjectManager_Id;
+            model.DateStart = project.DateStart;
+            model.DateDue = project.DateDue;
+            model.EmployeeList = employeeList;
+            model.ErrorMsg = errorMsg;
             return View("Edit", model);
         }
 
         public ActionResult SaveEdititngProject(ProjectsVm model)
         {
+            if (model is null || String.IsNullOrWhiteSpace(model.Name) ||
+                model.ProjectManager_Id == 0 || model.ProjectManager_Id == null ||
+                model.DateStart == DateTime.MinValue || model.DateDue == DateTime.MinValue ||
+                DateTime.Compare(model.DateStart, model.DateDue) > 0)
+            {
+                TempData["error"] = "You did not enter dates correctly or you did not fill in some fields. All fields are required.. Check the dates and try again.";
+                return RedirectToAction("Edit", new { project_id = model.Id });
+            }
             ProjectsModel project = new ProjectsModel()
             {
                 Id = model.Id,
@@ -119,10 +179,15 @@ namespace DevTestProject.Controllers
 
             try
             {
-                _projectService.Update(project);
+                if (!_projectService.Update(project))
+                {
+                    TempData["error"] = $"Problems with updating project info (Service error \"Update/Edit\").";
+                    return RedirectToAction("Edit", new { project_id = model.Id});
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TempData["error"] = $"Problems with getting information from database (services). {e.Message}";
                 return RedirectToAction("Edit", model);
             }
             return RedirectToAction("Index");
@@ -132,7 +197,11 @@ namespace DevTestProject.Controllers
         {
             try
             {
-                _projectService.Delete(project_id);
+                if(!_projectService.Delete(project_id))
+                {
+                    TempData["error"] = $"Problems with deleting project (Service error \"Delete\"). To delete a project, you must remove/move the working teams(employees) from this project";
+                    return RedirectToAction("Index");
+                }
             }
             catch (Exception)
             {
@@ -141,22 +210,6 @@ namespace DevTestProject.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<SelectListItem> GetEmployeeList()
-        {
-            List<EmployeesModel> employees = new List<EmployeesModel>();
-            List<SelectListItem> employeeList = new List<SelectListItem>();
-            employees = _employeeService.GetAllEmployees();
-            foreach (var employee in employees)
-            {
-                employeeList.Add(
-                    new SelectListItem
-                    {
-                        Text = employee.Id.ToString(),
-                        Value = employee.Id.ToString()
-                    });
-            }
 
-            return employeeList;
-        }
     }
 }

@@ -11,7 +11,6 @@ namespace DevTestProject.Services.Interfaces
     {
         ProjectsModel GetProject(int project_id);
         List<ProjectsModel> GetAllProjects();
-        Dictionary<string, string> GetTeamWorkedOnProject();
         bool Create(ProjectsModel project);
         bool Update(ProjectsModel project);
         bool Delete(int project_id);

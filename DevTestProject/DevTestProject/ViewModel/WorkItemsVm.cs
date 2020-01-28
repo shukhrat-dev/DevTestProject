@@ -10,8 +10,8 @@ namespace DevTestProject.ViewModel
     public class WorkItemsVm : WorkItemsModel
     {
         public List<WorkItemsModel> WorkItems { get; set; }
-        public List<EmployeesModel> EmployeesList { get; set; }
         public List<SelectListItem> ProjectsList { get; set; }
         public List<SelectListItem> EmployeeList { get; set; }
+        public string  ErrorMsg { get; set; }
     }
 }

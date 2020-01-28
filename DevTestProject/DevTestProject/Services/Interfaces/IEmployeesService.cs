@@ -12,7 +12,7 @@ namespace DevTestProject.Services.Interfaces
         bool Create(EmployeesModel employee);
         EmployeesModel GetEmployee(int employee_id);
         List<EmployeesModel> GetAllEmployees();
-        List<EmployeesModel> GetAllEmployeesByPage(int page, int item_on_page);
+
         bool Update(EmployeesModel employee);
         bool Delete(EmployeesModel employee);
     }
